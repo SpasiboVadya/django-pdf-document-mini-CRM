@@ -50,32 +50,64 @@ django-pdf-document-mini-CRM/
 ## Встановлення та запуск
 
 1. Клонуйте репозиторій:
-```
-git clone https://github.com/username/django-pdf-document-mini-CRM.git
+```bash
+git clone https://github.com/yourusername/django-pdf-document-mini-CRM.git
 cd django-pdf-document-mini-CRM
 ```
 
-2. Встановіть залежності:
+2. Створіть та активуйте віртуальне середовище:
+```bash
+python -m venv venv
+source venv/bin/activate  # для Linux/Mac
+venv\Scripts\activate     # для Windows
 ```
+
+3. Встановіть залежності:
+```bash
 pip install -r requirements.txt
 ```
 
-3. Виконайте міграції:
-```
+4. Виконайте міграції:
+```bash
 python manage.py migrate
 ```
 
-4. Створіть суперкористувача:
-```
+5. Створіть суперкористувача:
+```bash
 python manage.py createsuperuser
 ```
 
-5. Запустіть сервер розробки:
-```
+6. Запустіть сервер розробки:
+```bash
 python manage.py runserver
 ```
 
-6. Відкрийте браузер за адресою http://127.0.0.1:8000/
+## Генерація Тестових Даних
+
+Для наповнення бази даних тестовими даними використовуйте команду:
+
+```bash
+# Базове використання (створить 10 документів по 3 сторінки)
+python manage.py seed_data
+
+# Створення конкретної кількості документів та сторінок
+python manage.py seed_data --documents 20 --pages-per-document 5
+```
+
+Команда створить:
+- Тестового користувача (якщо не існує):
+  - Логін: testuser
+  - Пароль: testpass123
+- Вказану кількість документів з випадковими даними
+- Вказану кількість сторінок для кожного документа
+
+## Основні функції
+
+- Управління PDF документами
+- Відстеження статусу документів
+- Система користувачів та ролей
+- Пошук та фільтрація документів
+- Перегляд та завантаження PDF файлів
 
 ## Технології
 - Python 3.8+

@@ -1,198 +1,106 @@
 {% extends 'base.html' %}
 
-{% block title %}Документ {{ document.number }} | {{ block.super }}{% endblock %}
+{% block title %} {{ document.number }} | {{ block.super }}{% endblock %}
 
-{% block content %}
-<div class="mb-6">
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900">Документ #{{ document.number }}</h1>
-        <a href="{% url 'documents:document_list' %}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm flex items-center hover:bg-gray-300">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Назад до списку
-        </a>
+{% block full_width_content %}
+<div class="flex h-screen">
+    <!-- Sidebar - full height, fixed width -->
+    <div class="w-80 shrink-0 bg-gray-900">
+        {% include 'documents/sidebar.html' %}
     </div>
-</div>
-
-<!-- Document information -->
-<div class="mb-6">
-    <div class="bg-white rounded-md shadow overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
-            <h2 class="text-lg font-medium text-gray-900">Інформація про документ</h2>
+    
+    <!-- Main content -->
+    <div class="flex-grow p-6 overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <a href="{% url 'documents:document_list' %}" class="flex items-center text-blue-600 hover:text-blue-800">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Повернутись до списку
+            </a>
         </div>
-        <div class="p-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="col-span-2">
-                    <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <tbody class="divide-y divide-gray-200">
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50 w-48">Номер документа</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.number }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">Контрагент</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.contractor }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">№ Рахунку</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.account_number|default:"-" }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">Дата проводки</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.date|date:"d.m.Y" }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">Тип документа</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.doc_type }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">Актив</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.asset|default:"-" }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">Папка</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.folder }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">Виконавець</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.executer.username|default:"Не призначено" }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">Створено</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.created_at|date:"d.m.Y H:i" }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">Оновлено</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">{{ document.updated_at|date:"d.m.Y H:i" }}</td>
-                                </tr>
-                                {% if document.error_code %}
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-500 bg-gray-50">Код помилки</td>
-                                    <td class="px-4 py-3 text-sm text-red-600">{{ document.error_code }}</td>
-                                </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <div>
-                    <div class="bg-white border border-gray-200 rounded-md overflow-hidden h-full flex flex-col">
-                        <div class="px-4 py-3 text-sm bg-gray-50 border-b border-gray-200">
-                            <h3 class="font-medium text-gray-900">Статус документа</h3>
-                        </div>
-                        <div class="p-4 flex-1 flex flex-col">
-                            <div class="mb-6 text-center">
-                                {% if document.status == 'completed' %}
-                                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
-                                        Опрацьовані
-                                    </span>
-                                {% elif document.status == 'in_progress' %}
-                                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                        Готово до обробки
-                                    </span>
-                                {% elif document.status == 'queue' %}
-                                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        На розпізнаванні
-                                    </span>
-                                {% elif document.status == 'error' %}
-                                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">
-                                        Помилка
-                                    </span>
-                                {% else %}
-                                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800">
-                                        {{ document.get_status_display }}
-                                    </span>
-                                {% endif %}
-                            </div>
-                            
-                            <form id="update-status-form" class="mt-auto">
-                                <div class="mb-4">
-                                    <label for="new-status" class="block text-sm font-medium text-gray-700 mb-1">Змінити статус:</label>
-                                    <select id="new-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        {% for status_value, status_name in document.STATUS_CHOICES %}
-                                            <option value="{{ status_value }}" {% if document.status == status_value %}selected{% endif %}>
-                                                {{ status_name }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
+        
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            </div>
+            
+            <div class="p-4">
+                {% if pages %}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {% for page in pages %}
+                            <div class="bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm">
+                                <div class="aspect-w-16 aspect-h-9 relative bg-gray-100">
+                                    {% if page.file_path %}
+                                        {% with file_ext=page.file_path.name|lower %}
+                                            {% if '.pdf' in file_ext %}
+                                                <!-- PDF Preview -->
+                                                <div class="w-full h-80">
+                                                    <iframe src="{{ page.file_path.url }}" width="100%" height="100%" class="border-0"></iframe>
+                                                </div>
+                                            {% elif '.jpg' in file_ext or '.jpeg' in file_ext or '.png' in file_ext or '.gif' in file_ext %}
+                                                <!-- Image Preview -->
+                                                <img src="{{ page.file_path.url }}" alt="{{ page.page_name }}" class="object-contain w-full h-80">
+                                            {% else %}
+                                                <!-- No Preview Available -->
+                                                <div class="w-full h-80 flex items-center justify-center">
+                                                    <span class="text-gray-400">Передперегляд недоступний</span>
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
+                                        
+                                        <!-- Action buttons -->
+                                        <div class="absolute top-2 right-2 flex space-x-1">
+                                            <a href="{{ page.file_path.url }}" target="_blank" class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                            </a>
+                                            <a href="{{ page.file_path.url }}" download class="p-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <div class="w-full h-80 flex items-center justify-center">
+                                            <span class="text-gray-400">Немає файлу</span>
+                                        </div>
+                                    {% endif %}
                                 </div>
-                                <button type="button" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" id="update-status-btn" data-document-id="{{ document.pk }}">
-                                    Оновити статус
-                                </button>
-                            </form>
-                        </div>
+                                
+                                <div class="p-4">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="text-sm font-medium text-gray-900">{{ page.page_name }}</h3>
+                                        {% if page.discrepancy_found %}
+                                            <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">
+                                                Виявлено розбіжності
+                                            </span>
+                                        {% else %}
+                                            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                                                Без розбіжностей
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mt-2 flex justify-between text-xs text-gray-500">
+                                        <span>{{ page.created_at|date:"d.m.Y" }}</span>
+                                        <span>{{ page.created_at|date:"H:i" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                </div>
+                {% else %}
+                    <div class="py-8 text-center text-gray-500">
+                        Для цього документа ще не додано сторінок.
+                    </div>
+                {% endif %}
             </div>
         </div>
-    </div>
-</div>
-
-<!-- Document pages -->
-<div class="bg-white rounded-md shadow overflow-hidden">
-    <div class="px-4 py-3 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-        <h2 class="text-lg font-medium text-gray-900">Сторінки документа</h2>
-    </div>
-    <div class="p-4">
-        {% if pages %}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for page in pages %}
-                    <div class="bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm">
-                        <div class="aspect-w-16 aspect-h-9 relative bg-gray-100">
-                            {% if page.file_path %}
-                                <img src="{{ page.file_path.url }}" alt="{{ page.page_name }}" class="object-cover w-full h-40">
-                                <div class="absolute top-2 right-2 flex space-x-1">
-                                    <a href="{{ page.file_path.url }}" target="_blank" class="p-1 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                    </a>
-                                    <a href="{{ page.file_path.url }}" download class="p-1 bg-green-600 text-white rounded-md hover:bg-green-700">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                        </svg>
-                                    </a>
-                                </div>
-                            {% else %}
-                                <div class="w-full h-40 flex items-center justify-center">
-                                    <span class="text-gray-400">Немає зображення</span>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="p-4">
-                            <h3 class="text-sm font-medium text-gray-900 mb-2">{{ page.page_name }}</h3>
-                            <div class="flex flex-wrap gap-1 mb-2">
-                                <span class="px-2 py-1 text-xs rounded-full {% if page.copy_original == 'original' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
-                                    {{ page.get_copy_original_display }}
-                                </span>
-                                <span class="px-2 py-1 text-xs rounded-full {% if page.completeness == 'full' %}bg-green-100 text-green-800{% elif page.completeness == 'filling' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
-                                    {{ page.get_completeness_display }}
-                                </span>
-                                {% if page.discrepancy_found %}
-                                    <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">
-                                        Виявлено розбіжності
-                                    </span>
-                                {% endif %}
-                            </div>
-                            <p class="text-xs text-gray-500">
-                                Додано: {{ page.created_at|date:"d.m.Y H:i" }}
-                            </p>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="py-8 text-center text-gray-500">
-                Для цього документа ще не додано сторінок.
-            </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
+
+{% block content %}{% endblock %}
 
 {% block extra_js %}
 <script>

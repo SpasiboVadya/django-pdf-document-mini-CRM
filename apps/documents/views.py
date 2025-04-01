@@ -84,7 +84,14 @@ class DocumentDetailView(LoginRequiredMixin, DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.object.pages.all()
+        pages = self.object.pages.all()
+        context['pages'] = pages
+        context['has_discrepancy'] = pages.filter(discrepancy_found=True).exists()
+        
+        # Find the first PDF file for the document
+        first_pdf = pages.filter(file_path__endswith='.pdf').first()
+        context['first_pdf'] = first_pdf
+        
         return context
 
 

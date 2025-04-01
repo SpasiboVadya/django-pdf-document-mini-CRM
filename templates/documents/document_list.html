@@ -121,7 +121,6 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">&nbsp;</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Тип</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Актив</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Папка</th>
@@ -139,9 +138,6 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for document in documents %}
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <input type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                    </td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.doc_type }}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.asset|default:"-" }}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.folder }}</td>

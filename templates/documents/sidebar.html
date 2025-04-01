@@ -1,0 +1,116 @@
+{% comment %}
+This is a sidebar template for the document detail page.
+It shows important document information in a compact format.
+{% endcomment %}
+
+{% load static %}
+
+<div class="bg-gray-900 text-white h-full flex flex-col">
+    <!-- Document info header -->
+    <div class="p-6 flex flex-col items-center space-y-2 border-b border-gray-800">
+        <div class="bg-red-500 rounded-xl p-4 mb-2">
+            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+            <div class="text-center mt-1 font-medium">PDF</div>
+        </div>
+        <h2 class="text-lg font-bold">Документ #{{ document.number }}</h2>
+        <p class="text-sm text-gray-400">{{ document.contractor }}</p>
+        
+        <!-- Status badge -->
+        <div class="flex items-center justify-center mt-2">
+            <span class="px-3 py-1 text-sm rounded-full {% if document.status == 'completed' %}bg-green-600{% elif document.status == 'error' %}bg-red-600{% else %}bg-yellow-600{% endif %} text-white">
+                {% if document.status == 'queue' %}На розпізнаванні
+                {% elif document.status == 'in_progress' %}В роботі
+                {% elif document.status == 'completed' %}Опрацьовані
+                {% elif document.status == 'error' %}Помилка
+                {% elif document.status == 'unblocked' %}Деблоковано
+                {% elif document.status == 'recognizing' %}Розпізнається
+                {% endif %}
+            </span>
+            {% if document.executer %}
+                <span class="text-sm text-gray-400 ml-2">{{ document.executer.username }}</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Navigation tabs -->
+    <div class="flex border-b border-gray-800">
+        <button class="flex-1 py-3 px-4 text-sm text-center text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+            Про документ
+        </button>
+        <button class="flex-1 py-3 px-4 text-sm text-center text-gray-400 hover:bg-gray-800 focus:outline-none">
+            Коментарі
+        </button>
+    </div>
+    
+    <!-- Document attributes -->
+    <div class="p-4 flex-grow">
+        <!-- Middle section -->
+        <div class="space-y-4 mb-6">
+            <div class="flex justify-between">
+                <span class="text-gray-400">Ознака</span>
+                <span class="font-medium">{{ document.get_copy_original_display }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">Наповнення</span>
+                <span class="font-medium">{{ document.get_completeness_display }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">Розбіжності з SAP</span>
+                {% if has_discrepancy %}
+                    <span class="font-medium text-red-500">Виявлено</span>
+                {% else %}
+                    <span class="font-medium">Не виявлено</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <hr class="border-gray-800 my-4">
+        
+        <!-- Lower section -->
+        <div class="space-y-4">
+            <div class="flex justify-between">
+                <span class="text-gray-400">Тип документа</span>
+                <span class="font-medium">{{ document.folder }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">Вид документа</span>
+                <span class="font-medium">{{ document.document_type }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">Платіж</span>
+                <span class="font-medium">{{ document.payment }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">Дата проведення</span>
+                <span class="font-medium">{{ document.date|date:"d.m.Y" }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">Власник документа</span>
+                <span class="font-medium">{{ document.document_owner }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom buttons -->
+    <div class="p-4 border-t border-gray-800">
+        <div class="grid grid-cols-2 gap-2">
+            {% if first_pdf %}
+                <a href="{{ first_pdf.file_path.url }}" download class="py-2 px-4 bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium rounded text-center">
+                    Завантажити PDF
+                </a>
+                <a href="{{ first_pdf.file_path.url }}" target="_blank" class="py-2 px-4 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded text-center">
+                    Відкрити PDF
+                </a>
+            {% else %}
+                <button disabled class="py-2 px-4 bg-gray-600 text-gray-400 text-sm font-medium rounded text-center cursor-not-allowed">
+                    Завантажити PDF
+                </button>
+                <button disabled class="py-2 px-4 bg-gray-600 text-gray-400 text-sm font-medium rounded text-center cursor-not-allowed">
+                    Відкрити PDF
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div> 
