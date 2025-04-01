@@ -2,7 +2,7 @@
 URL patterns for the documents app.
 """
 from django.urls import path
-from .views import DocumentListView, DocumentDetailView, update_document_status
+from .views import DocumentListView, DocumentDetailView, update_document_status, toggle_page_discrepancy
 
 app_name = 'documents'
 
@@ -21,4 +21,9 @@ urlpatterns = [
     path('<int:pk>/update-status/', 
          update_document_status, 
          name='update_document_status'),
+         
+    # AJAX endpoint for toggling page discrepancy status
+    path('page/<int:pk>/toggle-discrepancy/', 
+         toggle_page_discrepancy, 
+         name='toggle_page_discrepancy'),
 ] 

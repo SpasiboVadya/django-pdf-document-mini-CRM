@@ -19,7 +19,7 @@ from .services import (
     get_document_counts,
     update_document_status as update_doc_status
 )
-from .constants import ITEMS_PER_PAGE
+from .constants import ITEMS_PER_PAGE, STATUS_CHOICES
 
 
 class DocumentListView(LoginRequiredMixin, ListView):
@@ -86,6 +86,9 @@ class DocumentDetailView(LoginRequiredMixin, DetailView):
         # Add status form for updating document status
         context['status_form'] = DocumentStatusForm(initial={'status': self.object.status})
         
+        # Add status choices to context for the status dropdown
+        context['STATUS_CHOICES'] = STATUS_CHOICES
+        
         return context
 
 
@@ -106,3 +109,32 @@ def update_document_status(request, pk):
             return JsonResponse({'success': False, 'error': error}, status=404 if error == "Document not found" else 500)
     
     return JsonResponse({'success': False, 'error': form.errors['status'][0]}, status=400)
+
+
+@login_required
+@require_http_methods(["POST"])
+def toggle_page_discrepancy(request, pk):
+    """
+    Toggle the discrepancy_found status of a document page via AJAX.
+    """
+    try:
+        # Get the page
+        page = get_object_or_404(DocumentPage, pk=pk)
+        
+        # Get the new discrepancy value from request
+        new_discrepancy = request.POST.get('discrepancy_found') == 'true'
+        
+        # Update the page's discrepancy status
+        page.discrepancy_found = new_discrepancy
+        page.save()
+        
+        # Check if any pages in this document have discrepancies
+        has_discrepancy = page.document.pages.filter(discrepancy_found=True).exists()
+        
+        return JsonResponse({
+            'success': True, 
+            'discrepancy_found': new_discrepancy,
+            'document_has_discrepancy': has_discrepancy
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

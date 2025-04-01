@@ -54,10 +54,10 @@ class Command(BaseCommand):
             help='Number of pages per document'
         )
         parser.add_argument(
-            '--pdf-path', 
+            '--image-path', 
             type=str, 
-            default='CVResume.pdf', 
-            help='Path to the PDF file to use for pages'
+            default='sample.png', 
+            help='Path to the image file to use for pages'
         )
         parser.add_argument(
             '--no-progress', 
@@ -85,12 +85,12 @@ class Command(BaseCommand):
         
         return user
 
-    def _verify_pdf_path(self, pdf_path):
-        """Verify that the PDF file exists at the specified path."""
-        if not os.path.exists(pdf_path):
-            raise CommandError(f'PDF file not found at path: {pdf_path}')
+    def _verify_image_path(self, image_path):
+        """Verify that the image file exists at the specified path."""
+        if not os.path.exists(image_path):
+            raise CommandError(f'Image file not found at path: {image_path}')
         
-        return pdf_path
+        return image_path
 
     def _create_document(self, index, user):
         """Create a single document with random data."""
@@ -111,25 +111,25 @@ class Command(BaseCommand):
             completeness=random.choice([c[0] for c in COMPLETENESS_CHOICES])
         )
 
-    def _create_document_page(self, document, page_index, pdf_path):
-        """Create a single document page with PDF attachment."""
+    def _create_document_page(self, document, page_index, image_path):
+        """Create a single document page with image attachment."""
         page = DocumentPage(
             document=document,
             page_name=f'Сторінка {page_index+1}',
             discrepancy_found=random.choice([True, False])
         )
         
-        # Attach the PDF file to the DocumentPage
+        # Attach the image file to the DocumentPage
         try:
-            with open(pdf_path, 'rb') as pdf_file:
+            with open(image_path, 'rb') as image_file:
                 page.file_path.save(
-                    f'document_{document.id}_page_{page_index+1}.pdf',
-                    File(pdf_file),
+                    f'document_{document.id}_page_{page_index+1}.png',
+                    File(image_file),
                     save=True
                 )
-            self.stdout.write(f'Attached PDF to document {document.id}, page {page_index+1}')
+            self.stdout.write(f'Attached image to document {document.id}, page {page_index+1}')
         except Exception as e:
-            self.stderr.write(self.style.ERROR(f'Error attaching PDF file: {str(e)}'))
+            self.stderr.write(self.style.ERROR(f'Error attaching image file: {str(e)}'))
             page.save()  # Save the page without the file
         
         return page
@@ -139,12 +139,12 @@ class Command(BaseCommand):
         # Get command arguments
         num_documents = options['documents']
         pages_per_document = options['pages_per_document']
-        pdf_path = options['pdf_path']
+        image_path = options['image_path']
         show_progress = not options['no_progress']
         
         # Setup
         user = self._create_test_user()
-        pdf_path = self._verify_pdf_path(pdf_path)
+        image_path = self._verify_image_path(image_path)
         
         # Create documents within a transaction
         try:
@@ -160,7 +160,7 @@ class Command(BaseCommand):
                     
                     # Create pages for each document
                     for j in range(pages_per_document):
-                        self._create_document_page(doc, j, pdf_path)
+                        self._create_document_page(doc, j, image_path)
                     
                     if not show_progress:
                         self.stdout.write(f'Created document {i+1}/{num_documents} with {pages_per_document} pages')

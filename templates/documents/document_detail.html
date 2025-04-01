@@ -4,177 +4,212 @@
 {% block title %}Документ #{{ document.number }}{% endblock %}
 
 {% block content %}
-<div class="mb-6">
-    <div class="flex items-center space-x-2 mb-2">
-        <a href="{% url 'documents:document_list' %}" class="text-blue-600 hover:text-blue-800 flex items-center">
-            <i class="fas fa-arrow-left mr-1"></i>
-            <span>Назад до списку</span>
-        </a>
+<div class="fixed inset-0 flex bg-gray-100">
+    <!-- Sidebar -->
+    <div class="w-80 flex-shrink-0 bg-gray-900 h-full overflow-y-auto">
+        {% include 'documents/sidebar.html' %}
     </div>
     
-    <h1 class="text-2xl font-bold text-gray-900">Документ #{{ document.number }}</h1>
-    <p class="text-sm text-gray-500">
-        {{ document.contractor }} | {{ document.date|date:"d.m.Y" }}
-    </p>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <div class="lg:col-span-2 space-y-6">
-        <!-- Document metadata -->
-        {% include 'documents/includes/document_metadata.html' %}
-        
-        <!-- Document pages -->
-        <div class="bg-white rounded-md shadow overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-                <div class="flex items-center">
-                    <i class="fas fa-file-alt mr-2 text-gray-600"></i>
-                    <h2 class="text-lg font-medium text-gray-800">Сторінки документа</h2>
+    <!-- Main content -->
+    <div class="flex-1 overflow-hidden flex flex-col">
+        <!-- Top navigation -->
+        <div class="bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-10">
+            <a href="{% url 'documents:document_list' %}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Повернутись до списку
+            </a>
+            
+            <div class="flex items-center space-x-2">
+                <div class="relative">
+                    <button class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <span>Інші дії</span>
+                        <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
                 </div>
                 
-                {% if has_discrepancy %}
-                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
-                        Виявлено розбіжності
-                    </span>
-                {% endif %}
+                <button class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Деблокувати
+                </button>
             </div>
+        </div>
+        
+
             
-            <div class="p-4">
-                {% if pages %}
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Назва сторінки
-                                    </th>
-                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Файл
-                                    </th>
-                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Розбіжності
-                                    </th>
-                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Створено
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                {% for page in pages %}
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                                            {{ page.page_name }}
-                                        </td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                                            {% if page.file_path %}
-                                                <a href="{{ page.file_path.url }}" class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" target="_blank">
-                                                    {% if page.file_extension == 'pdf' %}
-                                                        <i class="fas fa-file-pdf mr-1 text-red-600"></i>
-                                                    {% else %}
-                                                        <i class="fas fa-file mr-1 text-gray-600"></i>
-                                                    {% endif %}
-                                                    Відкрити
-                                                </a>
-                                            {% else %}
-                                                <span class="text-gray-500">Файл відсутній</span>
-                                            {% endif %}
-                                        </td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                                            {% if page.discrepancy_found %}
-                                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Так</span>
-                                            {% else %}
-                                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Ні</span>
-                                            {% endif %}
-                                        </td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            {{ page.created_at|date:"d.m.Y H:i" }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+            <!-- Мініатюри всіх сторінок -->
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+
+
+                <!-- Мініатюри сторінок -->
+                {% for page in pages %}
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div style="height: 300px;" class="relative">
+                        {% if page.file_path %}
+                            <img src="{{ page.file_path.url }}" alt="{{ page.page_name }}" class="absolute inset-0 object-contain w-full h-full p-2">
+                        {% else %}
+                            <div class="flex items-center justify-center h-full bg-gray-100">
+                                <span class="text-gray-500">Зображення недоступне</span>
+                            </div>
+                        {% endif %}
                     </div>
-                {% else %}
-                    <div class="py-8 text-center text-gray-500">
-                        Документ не має прикріплених сторінок.
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-        
-        <!-- PDF Viewer (if available) -->
-        {% if first_pdf %}
-            <div class="bg-white rounded-md shadow overflow-hidden">
-                <div class="px-4 py-3 border-b border-gray-200 flex items-center">
-                    <i class="fas fa-file-pdf mr-2 text-red-600"></i>
-                    <h2 class="text-lg font-medium text-gray-800">Перегляд PDF</h2>
-                </div>
-                <div class="h-[600px]">
-                    <embed src="{{ first_pdf.file_path.url }}" type="application/pdf" width="100%" height="100%">
-                </div>
-            </div>
-        {% endif %}
-    </div>
-    
-    <div class="space-y-6">
-        <!-- Status control -->
-        {% include 'documents/includes/status_control.html' %}
-        
-        <!-- Current status -->
-        <div class="bg-white rounded-md shadow overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-200 flex items-center">
-                <i class="fas fa-info-circle mr-2 text-gray-600"></i>
-                <h2 class="text-lg font-medium text-gray-800">Поточний статус</h2>
-            </div>
-            <div class="p-4">
-                <div class="flex flex-col items-center">
-                    <div class="mb-2">
-                        <span class="px-3 py-1 
-                            {% if document.status == 'queue' %}
-                                bg-yellow-100 text-yellow-800
-                            {% elif document.status == 'in_progress' %}
-                                bg-blue-100 text-blue-800
-                            {% elif document.status == 'completed' %}
-                                bg-green-100 text-green-800
-                            {% elif document.status == 'error' %}
-                                bg-red-100 text-red-800
+                    <div class="p-3 border-t border-gray-200">
+                        <h3 class="text-sm font-medium text-gray-900">{{ page.page_name }}</h3>
+                        {% if page.file_path %}
+                            {% if page.discrepancy_found %}
+                                <div class="mt-1">
+                                    <button type="button" class="discrepancy-toggle w-full text-left bg-red-100 text-red-800 text-xs px-2 py-1 rounded-md border border-red-300 hover:bg-red-200 transition-colors" data-page-id="{{ page.id }}" data-discrepancy="true">
+                                        <span class="inline-flex items-center">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                            </svg>
+                                            Виявлено розбіжності
+                                        </span>
+                                    </button>
+                                </div>
                             {% else %}
-                                bg-gray-100 text-gray-800
+                                <div class="mt-1">
+                                    <button type="button" class="discrepancy-toggle w-full text-left bg-green-100 text-green-800 text-xs px-2 py-1 rounded-md border border-green-300 hover:bg-green-200 transition-colors" data-page-id="{{ page.id }}" data-discrepancy="false">
+                                        <span class="inline-flex items-center">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            Без розбіжностей
+                                        </span>
+                                    </button>
+                                </div>
                             {% endif %}
-                            text-sm font-medium rounded-full">
-                            {{ document.get_status_display }}
-                        </span>
+                        {% endif %}
                     </div>
-                    <p class="text-xs text-gray-500">
-                        Останнє оновлення: {{ document.updated_at|date:"d.m.Y H:i" }}
-                    </p>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Actions -->
-        <div class="bg-white rounded-md shadow overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-200 flex items-center">
-                <i class="fas fa-cogs mr-2 text-gray-600"></i>
-                <h2 class="text-lg font-medium text-gray-800">Дії</h2>
-            </div>
-            <div class="p-4 space-y-2">
-                <a href="{% url 'admin:documents_document_change' document.id %}" class="w-full flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" target="_blank">
-                    <i class="fas fa-edit mr-1.5"></i>
-                    Редагувати в адмін-панелі
-                </a>
-                <a href="{% url 'documents:document_list' %}" class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    <i class="fas fa-arrow-left mr-1.5"></i>
-                    Повернутися до списку
-                </a>
+                {% empty %}
+                <div class="bg-white rounded-lg shadow p-6 text-center text-gray-500 col-span-full">
+                    <p>Сторінки документа не знайдено</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Забезпечуємо, що всі батьківські контейнери не мають padding/margin
+        document.querySelectorAll('#main, #content, main').forEach(function(el) {
+            el.style.padding = '0';
+            el.style.margin = '0';
+            el.style.overflow = 'hidden';
+        });
+
+        // Додаємо обробник кліку на кнопки переключення discrepancy_found
+        document.querySelectorAll('.discrepancy-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const pageId = this.getAttribute('data-page-id');
+                const currentDiscrepancy = this.getAttribute('data-discrepancy') === 'true';
+                const newDiscrepancy = !currentDiscrepancy;
+                const button = this;
+                
+                // Додаємо ефект завантаження
+                button.disabled = true;
+                button.classList.add('opacity-75');
+                const originalContent = button.innerHTML;
+                button.innerHTML = `<span class="inline-flex items-center">
+                    <svg class="animate-spin h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Оновлення...
+                </span>`;
+                
+                // AJAX запит для оновлення статусу розбіжностей
+                fetch(`/documents/page/${pageId}/toggle-discrepancy/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: `discrepancy_found=${newDiscrepancy}`
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Оновлюємо вигляд кнопки
+                        updateDiscrepancyButton(button, data.discrepancy_found);
+                        showNotification('Статус розбіжності успішно оновлено', 'success');
+                    } else {
+                        // Відновлюємо початковий стан
+                        button.innerHTML = originalContent;
+                        button.disabled = false;
+                        button.classList.remove('opacity-75');
+                        showNotification('Помилка: ' + (data.error || 'Невідома помилка'), 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Помилка:', error);
+                    // Відновлюємо початковий стан
+                    button.innerHTML = originalContent;
+                    button.disabled = false;
+                    button.classList.remove('opacity-75');
+                    showNotification('Виникла помилка при оновленні статусу розбіжності', 'error');
+                });
+            });
+        });
+        
+        function updateDiscrepancyButton(button, discrepancy) {
+            button.disabled = false;
+            button.classList.remove('opacity-75');
+            button.setAttribute('data-discrepancy', discrepancy.toString());
+            
+            if (discrepancy) {
+                button.className = 'discrepancy-toggle w-full text-left bg-red-100 text-red-800 text-xs px-2 py-1 rounded-md border border-red-300 hover:bg-red-200 transition-colors';
+                button.innerHTML = `<span class="inline-flex items-center">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    Виявлено розбіжності
+                </span>`;
+            } else {
+                button.className = 'discrepancy-toggle w-full text-left bg-green-100 text-green-800 text-xs px-2 py-1 rounded-md border border-green-300 hover:bg-green-200 transition-colors';
+                button.innerHTML = `<span class="inline-flex items-center">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Без розбіжностей
+                </span>`;
+            }
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Створюємо елемент повідомлення
+            const notification = document.createElement('div');
+            notification.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg text-white text-sm font-medium z-50 ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 
+                'bg-blue-600'
+            }`;
+            notification.textContent = message;
+            
+            // Додаємо на сторінку
+            document.body.appendChild(notification);
+            
+            // Видаляємо через 3 секунди
+            setTimeout(() => {
+                notification.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
         const updateStatusBtn = document.getElementById('update-status-btn');
         if (updateStatusBtn) {
             updateStatusBtn.addEventListener('click', function() {
