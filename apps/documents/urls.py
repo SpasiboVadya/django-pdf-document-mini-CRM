@@ -1,10 +1,10 @@
 from django.urls import path
-from . import views
+from .views import DocumentListView, DocumentDetailView, update_document_status
 
 app_name = 'documents'
 
 urlpatterns = [
-    path('', views.DocumentListView.as_view(), name='document_list'),
-    path('<int:pk>/', views.DocumentDetailView.as_view(), name='document_detail'),
-    path('<int:pk>/update-status/', views.update_document_status, name='update_status'),
+    path('', DocumentListView.as_view(), name='document_list'),
+    path('<int:pk>/', DocumentDetailView.as_view(), name='document_detail'),
+    path('<int:pk>/update-status/', update_document_status, name='update_document_status'),
 ] 

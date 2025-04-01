@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from .models import Document, DocumentPage
 from datetime import datetime
+from django.views.decorators.http import require_http_methods
 
 class DocumentListView(LoginRequiredMixin, ListView):
     model = Document
@@ -74,6 +75,12 @@ class DocumentListView(LoginRequiredMixin, ListView):
         # Add update time
         context['update_time'] = datetime.now().strftime('%d.%m.%Y о %H:%M')
         
+        # Add document counts for each status
+        context['total_count'] = Document.objects.count()
+        context['queue_count'] = Document.objects.filter(status='queue').count()
+        context['in_progress_count'] = Document.objects.filter(status='in_progress').count()
+        context['completed_count'] = Document.objects.filter(status='completed').count()
+        
         return context
 
 
@@ -96,14 +103,19 @@ class DocumentDetailView(LoginRequiredMixin, DetailView):
 
 
 @login_required
+@require_http_methods(["POST"])
 def update_document_status(request, pk):
-    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        document = get_object_or_404(Document, pk=pk)
+    try:
+        document = Document.objects.get(pk=pk)
         new_status = request.POST.get('status')
         
-        if new_status and new_status in dict(Document.STATUS_CHOICES):
+        if new_status in dict(Document.STATUS_CHOICES):
             document.status = new_status
             document.save()
             return JsonResponse({'success': True})
-            
-    return JsonResponse({'success': False}, status=400)
+        else:
+            return JsonResponse({'success': False, 'error': 'Invalid status'})
+    except Document.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Document not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
