@@ -23,6 +23,11 @@
                     <a href="{% url 'documents:document_list' %}" class="px-3 py-2 bg-blue-600 text-white rounded-md text-sm">Головна</a>
                     <a href="#" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-sm">Аналітика</a>
                     <a href="#" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-sm">Допомога</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}" class="px-3 py-2 bg-red-500 text-white rounded-md text-sm">Вихід</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="px-3 py-2 bg-green-500 text-white rounded-md text-sm">Вхід</a>
+                    {% endif %}
                 </div>
             </div>
         </header>

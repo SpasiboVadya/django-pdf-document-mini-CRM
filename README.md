@@ -27,6 +27,19 @@ django-pdf-document-mini-CRM/
 └── README.md
 ```
 
+## URL-адреси та навігація
+
+### Основні URL-адреси:
+- `/` або `/documents/` - Список документів (головна сторінка)
+- `/documents/<id>/` - Детальний перегляд документу з ідентифікатором `<id>`
+- `/admin/` - Адміністративна панель Django
+
+### Авторизація:
+- `/accounts/login/` - Сторінка входу в систему
+- `/accounts/logout/` - Вихід із системи
+
+Для доступу до системи необхідно увійти через сторінку авторизації, використовуючи створені раніше облікові дані.
+
 ## Моделі
 
 ### Document
@@ -49,6 +62,8 @@ django-pdf-document-mini-CRM/
 
 ## Встановлення та запуск
 
+### Підготовка середовища
+
 1. Клонуйте репозиторій:
 ```bash
 git clone https://github.com/yourusername/django-pdf-document-mini-CRM.git
@@ -67,20 +82,41 @@ venv\Scripts\activate     # для Windows
 pip install -r requirements.txt
 ```
 
-4. Виконайте міграції:
+### Налаштування
+
+1. Налаштування змінних середовища (опціонально):
+   - Створіть файл `.env` в корні проекту зі змістом:
+   ```
+   DEBUG=True
+   SECRET_KEY=your-secret-key
+   DATABASE_URL=sqlite:///db.sqlite3
+   ```
+
+2. Налаштування бази даних:
+   - За замовчуванням проект використовує SQLite
+   - Для використання інших СУБД (PostgreSQL, MySQL) змініть налаштування в `config/settings.py`
+
+3. Створіть та застосуйте міграції:
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
-5. Створіть суперкористувача:
+4. Створіть суперкористувача для доступу до адмін-панелі:
 ```bash
 python manage.py createsuperuser
 ```
 
-6. Запустіть сервер розробки:
+### Запуск проекту
+
+1. Запустіть сервер розробки:
 ```bash
 python manage.py runserver
 ```
+
+2. Відкрийте браузер та перейдіть за адресою:
+   - http://127.0.0.1:8000/ - Головна сторінка
+   - http://127.0.0.1:8000/admin/ - Адміністративна панель
 
 ## Генерація Тестових Даних
 
@@ -92,6 +128,9 @@ python manage.py seed_data
 
 # Створення конкретної кількості документів та сторінок
 python manage.py seed_data --documents 20 --pages-per-document 5
+
+# Використання власного зображення замість PDF
+python manage.py seed_data --image-path path/to/your/image.png
 ```
 
 Команда створить:
@@ -113,4 +152,22 @@ python manage.py seed_data --documents 20 --pages-per-document 5
 - Python 3.8+
 - Django 4.2+
 - Bootstrap 5
-- HTML/CSS/JavaScript 
+- HTML/CSS/JavaScript
+- Tailwind CSS 
+
+## Вирішення проблем
+
+### Помилка при запуску міграцій
+Якщо при запуску міграцій виникають помилки:
+```bash
+python manage.py migrate --run-syncdb
+```
+
+### Проблеми з доступом до адміністративної панелі
+Перевірте, чи створений суперкористувач:
+```bash
+python manage.py createsuperuser
+```
+
+### Не відображаються статичні файли
+Переконайтеся, що в режимі розробки `DEBUG=True` в налаштуваннях проекту. 
