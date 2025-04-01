@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}Список документів | {{ block.super }}{% endblock %}
+
+{% block content %}
+<!-- Document status tabs -->
+<div class="mb-6">
+    <div class="bg-white rounded-md shadow">
+        <div class="flex border-b border-gray-200">
+            <a href="{% url 'documents:document_list' %}" class="px-6 py-3 text-sm font-medium {% if not request.GET.status %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-gray-800{% endif %}">
+                Усі документи
+            </a>
+            <a href="{% url 'documents:document_list' %}?status=queue" class="px-6 py-3 text-sm font-medium {% if request.GET.status == 'queue' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-gray-800{% endif %}">
+                На розпізнаванні
+            </a>
+            <a href="{% url 'documents:document_list' %}?status=in_progress" class="px-6 py-3 text-sm font-medium {% if request.GET.status == 'in_progress' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-gray-800{% endif %}">
+                Готово до обробки
+            </a>
+            <a href="{% url 'documents:document_list' %}?status=completed" class="px-6 py-3 text-sm font-medium {% if request.GET.status == 'completed' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-gray-800{% endif %}">
+                Опрацьовані
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Search and filters -->
+<div class="mb-6">
+    <div class="bg-white rounded-md shadow p-4">
+        <form method="get" action="{% url 'documents:document_list' %}">
+            <!-- Search input -->
+            <div class="mb-4">
+                <div class="relative">
+                    <input type="text" name="search" placeholder="Пошук по № документу чи № рахунку" class="w-full px-4 py-2 border border-gray-300 rounded-md pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ request.GET.search|default:'' }}">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div>
+                    <label for="asset" class="block text-sm font-medium text-gray-700 mb-1">Актив</label>
+                    <select id="asset" name="asset" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Усі активи</option>
+                        {% for asset_value in asset_values %}
+                            <option value="{{ asset_value }}" {% if request.GET.asset == asset_value|stringformat:"i" %}selected{% endif %}>{{ asset_value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="folder" class="block text-sm font-medium text-gray-700 mb-1">Папка</label>
+                    <select id="folder" name="folder" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Усі папки</option>
+                        {% for folder_value in folder_values %}
+                            <option value="{{ folder_value }}" {% if request.GET.folder == folder_value %}selected{% endif %}>{{ folder_value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="error_code" class="block text-sm font-medium text-gray-700 mb-1">Код помилки</label>
+                    <select id="error_code" name="error_code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Усі коди</option>
+                        {% for error_code_value in error_code_values %}
+                            <option value="{{ error_code_value }}" {% if request.GET.error_code == error_code_value %}selected{% endif %}>{{ error_code_value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="executer" class="block text-sm font-medium text-gray-700 mb-1">Виконавець</label>
+                    <select id="executer" name="executer" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Усі виконавці</option>
+                        {% for executer_value in executer_values %}
+                            <option value="{{ executer_value.id }}" {% if request.GET.executer == executer_value.id|stringformat:"i" %}selected{% endif %}>{{ executer_value.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="doc_type" class="block text-sm font-medium text-gray-700 mb-1">Тип документу</label>
+                    <select id="doc_type" name="doc_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Усі типи</option>
+                        {% for doc_type_value in doc_type_values %}
+                            <option value="{{ doc_type_value }}" {% if request.GET.doc_type == doc_type_value %}selected{% endif %}>{{ doc_type_value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Filter buttons -->
+            <div class="mt-4 flex justify-between">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Застосувати фільтр
+                </button>
+                <a href="{% url 'documents:document_list' %}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                    Очистити
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Document list table -->
+<div class="bg-white rounded-md shadow overflow-hidden">
+    <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+        <h2 class="text-sm font-medium text-gray-700">Оновлено {{ update_time|default:"сьогодні" }}</h2>
+        <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            Оновити
+        </button>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">&nbsp;</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Тип</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Актив</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Папка</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Контрагент</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">№ Документа</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">№ Рахунку</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата проводки</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Код</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Виконавець</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата myOCR</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for document in documents %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <input type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.doc_type }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.asset|default:"-" }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.folder }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.contractor }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.number }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.account_number|default:"-" }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.date|date:"d.m.Y" }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.error_code|default:"-" }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        {% if document.status == 'completed' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Опрацьовані
+                            </span>
+                        {% elif document.status == 'in_progress' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                Готово до обробки
+                            </span>
+                        {% elif document.status == 'queue' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                На розпізнаванні
+                            </span>
+                        {% elif document.status == 'error' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                Помилка
+                            </span>
+                        {% else %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                {{ document.get_status_display }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                        {{ document.executer.username|default:"Не призначено" }}
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                        {{ document.updated_at|date:"d.m.Y H:i" }}
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="{% url 'documents:document_detail' document.pk %}" class="text-blue-600 hover:text-blue-900">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="13" class="px-4 py-6 text-center text-gray-500">
+                        Документи не знайдено. Спробуйте змінити параметри фільтрації.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6">
+        <div class="flex items-center justify-between">
+            <div class="flex-1 flex justify-between items-center">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        На початок
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Назад
+                    </a>
+                {% endif %}
+                
+                <span class="mx-4 text-sm text-gray-700">
+                    Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Вперед
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        В кінець
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
