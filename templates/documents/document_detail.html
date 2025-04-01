@@ -1,106 +1,176 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %} {{ document.number }} | {{ block.super }}{% endblock %}
+{% block title %}Документ #{{ document.number }}{% endblock %}
 
-{% block full_width_content %}
-<div class="flex h-screen">
-    <!-- Sidebar - full height, fixed width -->
-    <div class="w-80 shrink-0 bg-gray-900">
-        {% include 'documents/sidebar.html' %}
+{% block content %}
+<div class="mb-6">
+    <div class="flex items-center space-x-2 mb-2">
+        <a href="{% url 'documents:document_list' %}" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <i class="fas fa-arrow-left mr-1"></i>
+            <span>Назад до списку</span>
+        </a>
     </div>
     
-    <!-- Main content -->
-    <div class="flex-grow p-6 overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
-            <a href="{% url 'documents:document_list' %}" class="flex items-center text-blue-600 hover:text-blue-800">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Повернутись до списку
-            </a>
-        </div>
+    <h1 class="text-2xl font-bold text-gray-900">Документ #{{ document.number }}</h1>
+    <p class="text-sm text-gray-500">
+        {{ document.contractor }} | {{ document.date|date:"d.m.Y" }}
+    </p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Document metadata -->
+        {% include 'documents/includes/document_metadata.html' %}
         
-        <div class="bg-white rounded-lg shadow overflow-hidden">
+        <!-- Document pages -->
+        <div class="bg-white rounded-md shadow overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-file-alt mr-2 text-gray-600"></i>
+                    <h2 class="text-lg font-medium text-gray-800">Сторінки документа</h2>
+                </div>
+                
+                {% if has_discrepancy %}
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                        Виявлено розбіжності
+                    </span>
+                {% endif %}
             </div>
             
             <div class="p-4">
                 {% if pages %}
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {% for page in pages %}
-                            <div class="bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm">
-                                <div class="aspect-w-16 aspect-h-9 relative bg-gray-100">
-                                    {% if page.file_path %}
-                                        {% with file_ext=page.file_path.name|lower %}
-                                            {% if '.pdf' in file_ext %}
-                                                <!-- PDF Preview -->
-                                                <div class="w-full h-80">
-                                                    <iframe src="{{ page.file_path.url }}" width="100%" height="100%" class="border-0"></iframe>
-                                                </div>
-                                            {% elif '.jpg' in file_ext or '.jpeg' in file_ext or '.png' in file_ext or '.gif' in file_ext %}
-                                                <!-- Image Preview -->
-                                                <img src="{{ page.file_path.url }}" alt="{{ page.page_name }}" class="object-contain w-full h-80">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Назва сторінки
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Файл
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Розбіжності
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Створено
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for page in pages %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                                            {{ page.page_name }}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                                            {% if page.file_path %}
+                                                <a href="{{ page.file_path.url }}" class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" target="_blank">
+                                                    {% if page.file_extension == 'pdf' %}
+                                                        <i class="fas fa-file-pdf mr-1 text-red-600"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-file mr-1 text-gray-600"></i>
+                                                    {% endif %}
+                                                    Відкрити
+                                                </a>
                                             {% else %}
-                                                <!-- No Preview Available -->
-                                                <div class="w-full h-80 flex items-center justify-center">
-                                                    <span class="text-gray-400">Передперегляд недоступний</span>
-                                                </div>
+                                                <span class="text-gray-500">Файл відсутній</span>
                                             {% endif %}
-                                        {% endwith %}
-                                        
-                                        <!-- Action buttons -->
-                                        <div class="absolute top-2 right-2 flex space-x-1">
-                                            <a href="{{ page.file_path.url }}" target="_blank" class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                                </svg>
-                                            </a>
-                                            <a href="{{ page.file_path.url }}" download class="p-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    {% else %}
-                                        <div class="w-full h-80 flex items-center justify-center">
-                                            <span class="text-gray-400">Немає файлу</span>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="p-4">
-                                    <div class="flex justify-between items-center">
-                                        <h3 class="text-sm font-medium text-gray-900">{{ page.page_name }}</h3>
-                                        {% if page.discrepancy_found %}
-                                            <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">
-                                                Виявлено розбіжності
-                                            </span>
-                                        {% else %}
-                                            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                                                Без розбіжностей
-                                            </span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="mt-2 flex justify-between text-xs text-gray-500">
-                                        <span>{{ page.created_at|date:"d.m.Y" }}</span>
-                                        <span>{{ page.created_at|date:"H:i" }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                                            {% if page.discrepancy_found %}
+                                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Так</span>
+                                            {% else %}
+                                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Ні</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                            {{ page.created_at|date:"d.m.Y H:i" }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 {% else %}
                     <div class="py-8 text-center text-gray-500">
-                        Для цього документа ще не додано сторінок.
+                        Документ не має прикріплених сторінок.
                     </div>
                 {% endif %}
+            </div>
+        </div>
+        
+        <!-- PDF Viewer (if available) -->
+        {% if first_pdf %}
+            <div class="bg-white rounded-md shadow overflow-hidden">
+                <div class="px-4 py-3 border-b border-gray-200 flex items-center">
+                    <i class="fas fa-file-pdf mr-2 text-red-600"></i>
+                    <h2 class="text-lg font-medium text-gray-800">Перегляд PDF</h2>
+                </div>
+                <div class="h-[600px]">
+                    <embed src="{{ first_pdf.file_path.url }}" type="application/pdf" width="100%" height="100%">
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="space-y-6">
+        <!-- Status control -->
+        {% include 'documents/includes/status_control.html' %}
+        
+        <!-- Current status -->
+        <div class="bg-white rounded-md shadow overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-200 flex items-center">
+                <i class="fas fa-info-circle mr-2 text-gray-600"></i>
+                <h2 class="text-lg font-medium text-gray-800">Поточний статус</h2>
+            </div>
+            <div class="p-4">
+                <div class="flex flex-col items-center">
+                    <div class="mb-2">
+                        <span class="px-3 py-1 
+                            {% if document.status == 'queue' %}
+                                bg-yellow-100 text-yellow-800
+                            {% elif document.status == 'in_progress' %}
+                                bg-blue-100 text-blue-800
+                            {% elif document.status == 'completed' %}
+                                bg-green-100 text-green-800
+                            {% elif document.status == 'error' %}
+                                bg-red-100 text-red-800
+                            {% else %}
+                                bg-gray-100 text-gray-800
+                            {% endif %}
+                            text-sm font-medium rounded-full">
+                            {{ document.get_status_display }}
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500">
+                        Останнє оновлення: {{ document.updated_at|date:"d.m.Y H:i" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="bg-white rounded-md shadow overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-200 flex items-center">
+                <i class="fas fa-cogs mr-2 text-gray-600"></i>
+                <h2 class="text-lg font-medium text-gray-800">Дії</h2>
+            </div>
+            <div class="p-4 space-y-2">
+                <a href="{% url 'admin:documents_document_change' document.id %}" class="w-full flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" target="_blank">
+                    <i class="fas fa-edit mr-1.5"></i>
+                    Редагувати в адмін-панелі
+                </a>
+                <a href="{% url 'documents:document_list' %}" class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <i class="fas fa-arrow-left mr-1.5"></i>
+                    Повернутися до списку
+                </a>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-
-{% block content %}{% endblock %}
 
 {% block extra_js %}
 <script>

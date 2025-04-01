@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Logo{% endblock %}</title>
-    <!-- Tailwind CSS from CDN -->
+    <title>{% block title %}PDF-CRM{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Custom styles -->
     <style>
-        /* Add any custom styles here */
         body {
             margin: 0;
             padding: 0;
@@ -21,9 +25,9 @@
         <!-- Header with buttons on the right -->
         <header class="bg-white shadow">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                <a href="/" class="text-xl font-semibold text-blue-600">Logo</a>
+                <a href="/" class="text-xl font-semibold text-blue-600">PDF-CRM</a>
                 <div class="flex space-x-2">
-                    <a href="#" class="px-3 py-2 bg-blue-600 text-white rounded-md text-sm">Головна</a>
+                    <a href="{% url 'documents:document_list' %}" class="px-3 py-2 bg-blue-600 text-white rounded-md text-sm">Головна</a>
                     <a href="#" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-sm">Аналітика</a>
                     <a href="#" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-sm">Допомога</a>
                 </div>

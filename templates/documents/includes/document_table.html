@@ -1,11 +1,20 @@
-<!-- Document list table -->
-<div class="bg-white rounded-md shadow overflow-hidden">
-    <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-        <h2 class="text-sm font-medium text-gray-700">Оновлено {{ update_time|default:"сьогодні" }}</h2>
-        <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-            </svg>
+<!-- Document List Table -->
+<div class="bg-white rounded-md shadow-sm overflow-hidden">
+    <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+        <div class="flex items-center">
+            <i class="fas fa-file-alt mr-2 text-gray-600"></i>
+            <h2 class="text-lg font-medium text-gray-800">
+                Документи
+                {% if last_update %}
+                <span class="text-sm text-gray-500 ml-2">
+                    Останнє оновлення: {{ last_update|date:"d.m.Y H:i" }}
+                </span>
+                {% endif %}
+            </h2>
+        </div>
+        
+        <button id="refresh-documents" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fas fa-sync-alt mr-1.5"></i>
             Оновити
         </button>
     </div>
@@ -14,150 +23,128 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Тип</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Актив</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Папка</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Контрагент</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">№ Документа</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">№ Рахунку</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Дата проводки</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Код</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Виконавець</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Дата myOCR</th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">&nbsp;</th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Актив.
+                    </th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Папка
+                    </th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Контрагент
+                    </th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        № документа
+                    </th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        № рахунку
+                    </th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Дата транзакції
+                    </th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Код помилки
+                    </th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Статус
+                    </th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Виконавець
+                    </th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Оновлено
+                    </th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for document in documents %}
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 flex items-center space-x-2">
-                        {% if document.doc_type == 'Специфікація' %}
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"></path>
-                            </svg>
-                            <span class="sr-only">Специфікація</span>
-                        {% elif document.doc_type == 'Договір' %}
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a4 4 0 00-8 0v2M5 13h14v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6z"></path>
-                            </svg>
-                            <span class="sr-only">Договір</span>
-                        {% elif document.doc_type == 'Акт' %}
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.1 0-2 .9-2 2s.9 2 2 2m0 0v4m0-4a2 2 0 100-4 2 2 0 000 4zm0-10a10 10 0 100 20 10 10 0 000-20z"></path>
-                            </svg>
-                            <span class="sr-only">Акт</span>
-                        {% elif document.doc_type == 'Рахунок' %}
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13M3 13v6h13"></path>
-                            </svg>
-                            <span class="sr-only">Рахунок</span>
-                        {% elif document.doc_type == 'Накладна' %}
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8h5a2 2 0 002-2v-5a2 2 0 00-2-2h-5v9z"></path>
-                            </svg>
-                            <span class="sr-only">Накладна</span>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {% if document.is_active %}
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 text-green-800">
+                                <i class="fas fa-check text-xs"></i>
+                            </span>
                         {% else %}
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h16v16H4z"></path>
-                            </svg>
-                            <span class="sr-only">{{ document.doc_type }}</span>
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-100 text-red-800">
+                                <i class="fas fa-times text-xs"></i>
+                            </span>
                         {% endif %}
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.asset|default:"-" }}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.folder }}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.contractor }}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.number }}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.account_number|default:"-" }}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.date|date:"d.m.Y" }}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ document.error_code|default:"-" }}</td>
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <div class="relative inline-block text-left">
-                            <button 
-    id="status-button-{{ document.id }}" 
-    type="button" 
-    class="inline-flex items-center space-x-2 text-xs font-medium px-2 py-1 
-           bg-gray-100 text-gray-800 border border-gray-300 rounded-md 
-           hover:bg-gray-200 focus:outline-none"
-    onclick="toggleStatusDropdown('{{ document.id }}')"
->
-                            <div class="flex items-center space-x-2">
-                                <div 
-                                class="w-3 h-3 rounded-sm 
-                                {% if document.status == 'completed' %}bg-green-600
-                                {% elif document.status == 'error' %}bg-red-600
-                                {% elif document.status == 'queue' %}bg-yellow-600
-                                {% elif document.status == 'in_progress' %}bg-blue-600
-                                {% elif document.status == 'unblocked' %}bg-purple-600
-                                {% elif document.status == 'recognizing' %}bg-gray-600
-                                {% else %}bg-gray-400
-                                {% endif %}">
-                            </div>
-                            <span class="text-gray-800 font-medium">
-                                {% if document.status == 'queue' %}
-                                    На розпізнаванні
-                                {% elif document.status == 'in_progress' %}
-                                    В роботі
-                                {% elif document.status == 'completed' %}
-                                    Опрацьовані
-                                {% elif document.status == 'error' %}
-                                    Помилка
-                                {% elif document.status == 'unblocked' %}
-                                    Деблоковано
-                                {% elif document.status == 'recognizing' %}
-                                    Розпізнається
-                                {% else %}
-                                    {{ document.get_status_display }}
-                                {% endif %}
-                            </span>
-                        </div>
-                    </button>
-                    <div 
-                    id="status-dropdown-{{ document.id }}" 
-                    class="hidden absolute mt-1 bg-white rounded-lg shadow-lg overflow-hidden z-50"
-                    >
-                    {% for status_value, status_name in document.STATUS_CHOICES %}
-                <button 
-                    class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center space-x-2"
-                    onclick="updateStatus('{{ document.id }}', '{{ status_value }}')"
-                >
-                    <div 
-                        class="w-3 h-3 rounded-sm 
-                        {% if status_value == 'completed' %}bg-green-600
-                        {% elif status_value == 'error' %}bg-red-600
-                        {% elif status_value == 'queue' %}bg-yellow-600
-                        {% elif status_value == 'in_progress' %}bg-blue-600
-                        {% elif status_value == 'unblocked' %}bg-purple-600
-                        {% elif status_value == 'recognizing' %}bg-gray-600
-                        {% else %}bg-gray-400
-                        {% endif %}">
-                    </div>
-                    <span class="text-gray-800">
-                        {{ status_name }}
-                    </span>
-                </button>
-            {% endfor %}
-        </div>
-    </div>
-</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                        {{ document.executer.username|default:"Не призначено" }}
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {{ document.folder|default_if_none:"—" }}
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                        {{ document.updated_at|date:"d.m.Y H:i" }}
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
+                        {{ document.contractor }}
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{% url 'documents:document_detail' document.pk %}" class="text-blue-600 hover:text-blue-900">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
+                        <a href="{% url 'documents:document_detail' document.id %}" class="text-blue-600 hover:text-blue-900">
+                            {{ document.number }}
                         </a>
+                    </td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {{ document.account_number|default_if_none:"—" }}
+                    </td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {{ document.date|date:"d.m.Y"|default_if_none:"—" }}
+                    </td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {% if document.error_code %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                {{ document.error_code }}
+                            </span>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm">
+                        <form method="post" action="{% url 'documents:update_document_status' document.id %}" class="inline-block status-update-form">
+                            {% csrf_token %}
+                            <div class="relative">
+                                <select name="status" class="block w-full pl-3 pr-8 py-1.5 text-xs border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md status-select appearance-none
+                                    {% if document.status == 'queue' %} bg-yellow-50 text-yellow-800
+                                    {% elif document.status == 'in_progress' %} bg-blue-50 text-blue-800
+                                    {% elif document.status == 'completed' %} bg-green-50 text-green-800
+                                    {% elif document.status == 'error' %} bg-red-50 text-red-800
+                                    {% endif %}"
+                                    data-document-id="{{ document.id }}">
+                                    <option value="queue" {% if document.status == 'queue' %}selected{% endif %}>На розпізнаванні</option>
+                                    <option value="in_progress" {% if document.status == 'in_progress' %}selected{% endif %}>Готово до обробки</option>
+                                    <option value="completed" {% if document.status == 'completed' %}selected{% endif %}>Опрацьовані</option>
+                                    <option value="error" {% if document.status == 'error' %}selected{% endif %}>Помилка</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                        <form method="post" action="{% url 'documents:update_document_status' document.id %}" class="inline-block executer-update-form">
+                            {% csrf_token %}
+                            <div class="relative">
+                                <select name="executer" class="block w-full pl-3 pr-8 py-1.5 text-xs border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md executer-select appearance-none" data-document-id="{{ document.id }}">
+                                    <option value="" {% if not document.executer %}selected{% endif %}>Не призначено</option>
+                                    {% for user in users %}
+                                    <option value="{{ user.id }}" {% if document.executer == user %}selected{% endif %}>{{ user.get_full_name|default:user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {{ document.updated_at|date:"d.m.Y H:i" }}
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="13" class="px-4 py-6 text-center text-gray-500">
-                        Документи не знайдено. Спробуйте змінити параметри фільтрації.
+                    <td colspan="11" class="px-6 py-10 text-center text-sm text-gray-500">
+                        Документів не знайдено. Спробуйте змінити параметри фільтрації.
                     </td>
                 </tr>
                 {% endfor %}
@@ -165,96 +152,179 @@
         </table>
     </div>
     
-    <!-- Pagination -->
     {% if is_paginated %}
-    <div class="px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6">
-        <div class="flex items-center justify-between">
-            <div class="flex-1 flex justify-between items-center">
-                {% if page_obj.has_previous %}
-                    <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        На початок
-                    </a>
-                    <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        Назад
-                    </a>
-                {% endif %}
-                
-                <span class="mx-4 text-sm text-gray-700">
-                    Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}
+    <div class="bg-white px-4 py-4 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <!-- Mobile pagination controls -->
+        <div class="flex flex-1 justify-between sm:hidden">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <i class="fas fa-chevron-left mr-1"></i> Назад
+                </a>
+            {% else %}
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-300 bg-gray-50 cursor-not-allowed">
+                    <i class="fas fa-chevron-left mr-1"></i> Назад
                 </span>
-                
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        Вперед
+            {% endif %}
+            
+            <p class="text-sm text-gray-700 py-2">
+                <span class="font-medium">{{ page_obj.number }}</span> з <span class="font-medium">{{ paginator.num_pages }}</span>
+            </p>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                </a>
+            {% else %}
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-300 bg-gray-50 cursor-not-allowed">
+                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                </span>
+            {% endif %}
+        </div>
+        
+        <!-- Desktop pagination controls -->
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Показано <span class="font-medium">{{ page_obj.start_index }}</span> - <span class="font-medium">{{ page_obj.end_index }}</span> з <span class="font-medium">{{ paginator.count }}</span> документів
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" title="Перша сторінка">
+                        <span class="sr-only">Перша</span>
+                        <i class="fas fa-angle-double-left"></i>
                     </a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        В кінець
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" title="Попередня сторінка">
+                        <span class="sr-only">Попередня</span>
+                        <i class="fas fa-angle-left"></i>
                     </a>
-                {% endif %}
+                    {% else %}
+                    <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed" title="Перша сторінка">
+                        <span class="sr-only">Перша</span>
+                        <i class="fas fa-angle-double-left"></i>
+                    </span>
+                    <span class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed" title="Попередня сторінка">
+                        <span class="sr-only">Попередня</span>
+                        <i class="fas fa-angle-left"></i>
+                    </span>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600" aria-current="page">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" title="Наступна сторінка">
+                        <span class="sr-only">Наступна</span>
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" title="Остання сторінка">
+                        <span class="sr-only">Остання</span>
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                    {% else %}
+                    <span class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed" title="Наступна сторінка">
+                        <span class="sr-only">Наступна</span>
+                        <i class="fas fa-angle-right"></i>
+                    </span>
+                    <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed" title="Остання сторінка">
+                        <span class="sr-only">Остання</span>
+                        <i class="fas fa-angle-double-right"></i>
+                    </span>
+                    {% endif %}
+                </nav>
             </div>
         </div>
     </div>
     {% endif %}
-</div> 
+</div>
 
 <script>
-    function toggleStatusDropdown(docId) {
-        closeAllDropdowns();
-        
-        const dropdown = document.getElementById('status-dropdown-' + docId);
-        dropdown.classList.toggle('hidden');
-    }
-
-    function updateStatus(docId, newStatus) {
-        const dropdown = document.getElementById('status-dropdown-' + docId);
-        dropdown.classList.add('hidden');
-
-        fetch(`/documents/${docId}/update-status/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': getCookie('csrftoken') 
-            },
-            body: `status=${newStatus}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.reload();
-            } else {
-                alert('Помилка при оновленні статусу. Спробуйте ще раз.');
-            }
-        })
-        .catch(error => {
-            console.error('Помилка:', error);
-            alert('Виникла помилка при оновленні статусу.');
-        });
-    }
-
-    function closeAllDropdowns() {
-        const allDropdowns = document.querySelectorAll('[id^="status-dropdown-"]');
-        allDropdowns.forEach(dropdown => dropdown.classList.add('hidden'));
-    }
-
-    document.addEventListener('click', function(event) {
-        if (!event.target.closest('.relative')) {
-            closeAllDropdowns();
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Refresh button functionality
+    document.getElementById('refresh-documents').addEventListener('click', function() {
+        window.location.reload();
     });
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+    
+    // Status update functionality
+    document.querySelectorAll('.status-select').forEach(function(select) {
+        select.addEventListener('change', function() {
+            const form = this.closest('form');
+            const statusValue = this.value;
+            const originalBgColor = this.style.backgroundColor;
+            
+            // Add visual feedback class
+            this.classList.add('opacity-50');
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
-            }
-        }
-        return cookieValue;
-    }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Change background color based on new status
+                    this.className = this.className.replace(/bg-\w+-50\s+text-\w+-800/g, '');
+                    if (statusValue === 'queue') {
+                        this.classList.add('bg-yellow-50', 'text-yellow-800');
+                    } else if (statusValue === 'in_progress') {
+                        this.classList.add('bg-blue-50', 'text-blue-800');
+                    } else if (statusValue === 'completed') {
+                        this.classList.add('bg-green-50', 'text-green-800');
+                    } else if (statusValue === 'error') {
+                        this.classList.add('bg-red-50', 'text-red-800');
+                    }
+                } else {
+                    console.error('Error updating status:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                // Remove visual feedback class
+                this.classList.remove('opacity-50');
+            });
+        });
+    });
+    
+    // Executer update functionality
+    document.querySelectorAll('.executer-select').forEach(function(select) {
+        select.addEventListener('change', function() {
+            const form = this.closest('form');
+            
+            // Add visual feedback class
+            this.classList.add('opacity-50');
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Error updating executer:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                // Remove visual feedback class
+                this.classList.remove('opacity-50');
+            });
+        });
+    });
+});
 </script>

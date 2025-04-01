@@ -1,0 +1,148 @@
+{% comment %}
+  Filter form for document list view
+  Used in document_list.html
+{% endcomment %}
+
+<div class="bg-white rounded-md shadow p-4 mb-6">
+  <form method="get" id="filter-form" class="flex flex-wrap items-center gap-2">
+    <div class="relative">
+      <label for="{{ filter_form.status.id_for_label }}" class="sr-only">Статус документа</label>
+      {{ filter_form.status }}
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+    
+    <div class="relative">
+      <label for="{{ filter_form.folder.id_for_label }}" class="sr-only">Папка</label>
+      {{ filter_form.folder }}
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+    
+    <div class="relative">
+      <label for="{{ filter_form.error_code.id_for_label }}" class="sr-only">Код помилки</label>
+      {{ filter_form.error_code }}
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+    
+    <div class="relative">
+      <label for="{{ filter_form.doc_type.id_for_label }}" class="sr-only">Тип документа</label>
+      {{ filter_form.doc_type }}
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+    
+    <div class="relative">
+      <label for="{{ filter_form.executer.id_for_label }}" class="sr-only">Виконавець</label>
+      {{ filter_form.executer }}
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+    
+    <div class="relative">
+      <label for="{{ filter_form.asset.id_for_label }}" class="sr-only">Актив</label>
+      {{ filter_form.asset }}
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+    
+    <div class="relative">
+      <label for="{{ filter_form.sort_by.id_for_label }}" class="sr-only">Сортування</label>
+      {{ filter_form.sort_by }}
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+    
+    <div>
+      <div class="relative">
+        <label for="{{ filter_form.search.id_for_label }}" class="sr-only">Пошук за номером або рахунком</label>
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        {{ filter_form.search }}
+      </div>
+    </div>
+    
+    <div class="flex space-x-2 ml-auto mt-2 sm:mt-0">
+      <a href="{% url 'documents:document_list' %}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        Очистити
+      </a>
+      <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        Застосувати фільтр
+      </button>
+    </div>
+  </form>
+</div>
+
+<style>
+  /* Стилі для фільтрів */
+  #filter-form select, 
+  #filter-form input[type="text"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    background-color: #fff;
+    min-width: 160px;
+  }
+  
+  #filter-form input[type="text"] {
+    padding-left: 2.5rem;
+    min-width: 250px;
+  }
+  
+  #filter-form select:focus, 
+  #filter-form input:focus {
+    outline: none;
+    --tw-ring-color: #3b82f6;
+    --tw-ring-offset-width: 2px;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px var(--tw-ring-color);
+  }
+  
+  /* Адаптивність для мобільних */
+  @media (max-width: 640px) {
+    #filter-form {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    #filter-form > div {
+      margin-bottom: 0.5rem;
+      width: 100%;
+    }
+    
+    #filter-form select,
+    #filter-form input[type="text"] {
+      width: 100%;
+      min-width: auto;
+    }
+  }
+</style> 

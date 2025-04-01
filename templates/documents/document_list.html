@@ -1,91 +1,27 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Список документів | {{ block.super }}{% endblock %}
+{% block title %}Документи{% endblock %}
 
 {% block content %}
-{% include 'documents/includes/status_nav.html' %}
-
-<!-- Search and filters -->
-<div class="mb-6">
-    <div class="bg-white rounded-md shadow p-4">
-        <form method="get" action="{% url 'documents:document_list' %}">
-            <!-- Search input -->
-            <div class="mb-4">
-                <div class="relative">
-                    <input type="text" name="search" placeholder="Пошук по № документу чи № рахунку" class="w-full px-4 py-2 border border-gray-300 rounded-md pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ request.GET.search|default:'' }}">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Filters -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div>
-                    <label for="asset" class="block text-sm font-medium text-gray-700 mb-1">Актив</label>
-                    <select id="asset" name="asset" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Усі активи</option>
-                        {% for asset_value in asset_values %}
-                            <option value="{{ asset_value }}" {% if request.GET.asset == asset_value|stringformat:"i" %}selected{% endif %}>{{ asset_value }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div>
-                    <label for="folder" class="block text-sm font-medium text-gray-700 mb-1">Папка</label>
-                    <select id="folder" name="folder" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Усі папки</option>
-                        {% for folder_value in folder_values %}
-                            <option value="{{ folder_value }}" {% if request.GET.folder == folder_value %}selected{% endif %}>{{ folder_value }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div>
-                    <label for="error_code" class="block text-sm font-medium text-gray-700 mb-1">Код помилки</label>
-                    <select id="error_code" name="error_code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Усі коди</option>
-                        {% for error_code_value in error_code_values %}
-                            <option value="{{ error_code_value }}" {% if request.GET.error_code == error_code_value %}selected{% endif %}>{{ error_code_value }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div>
-                    <label for="executer" class="block text-sm font-medium text-gray-700 mb-1">Виконавець</label>
-                    <select id="executer" name="executer" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Усі виконавці</option>
-                        {% for executer_value in executer_values %}
-                            <option value="{{ executer_value.id }}" {% if request.GET.executer == executer_value.id|stringformat:"i" %}selected{% endif %}>{{ executer_value.username }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div>
-                    <label for="doc_type" class="block text-sm font-medium text-gray-700 mb-1">Тип документу</label>
-                    <select id="doc_type" name="doc_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Усі типи</option>
-                        {% for doc_type_value in doc_type_values %}
-                            <option value="{{ doc_type_value }}" {% if request.GET.doc_type == doc_type_value %}selected{% endif %}>{{ doc_type_value }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Filter buttons -->
-            <div class="mt-4 flex justify-between">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Застосувати фільтр
-                </button>
-                <a href="{% url 'documents:document_list' %}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                    Очистити
-                </a>
-            </div>
-        </form>
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Документи</h1>
+        <span class="text-sm text-gray-500">Оновлено: {{ update_time }}</span>
     </div>
-</div>
-
-{% include 'documents/includes/document_table.html' %}
+    
+    <!-- Status navigation tabs -->
+    {% include 'documents/includes/status_nav.html' %}
+    
+    <!-- Filter form -->
+    {% include 'documents/includes/filter_form.html' %}
+        
+        {% if documents %}
+            <!-- Document table -->
+            {% include 'documents/includes/document_table.html' %}
+        {% else %}
+            <div class="p-8 text-center text-gray-500">
+                Документи не знайдено. Спробуйте змінити параметри фільтрації.
+            </div>
+        {% endif %}
+    </div>
 {% endblock %} 

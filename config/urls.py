@@ -26,5 +26,13 @@ urlpatterns = [
     path('', RedirectView.as_view(pattern_name='documents:document_list'), name='home'),
 ]
 
+# Add Django Debug Toolbar URLs
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ]
+
+# Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

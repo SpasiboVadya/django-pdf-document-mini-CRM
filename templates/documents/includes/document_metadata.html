@@ -1,0 +1,86 @@
+{% comment %}
+  Document metadata card
+  Used in document_detail.html
+{% endcomment %}
+
+<!-- Document metadata -->
+<div class="bg-white rounded-md shadow overflow-hidden mb-6">
+    <div class="px-4 py-3 border-b border-gray-200 flex items-center">
+        <i class="fas fa-info-circle mr-2 text-gray-600"></i>
+        <h2 class="text-lg font-medium text-gray-800">Інформація про документ</h2>
+    </div>
+    
+    <div class="p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Тип документа</p>
+                    <p class="text-sm font-medium text-gray-900">{{ document.get_doc_type_display }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Номер документа</p>
+                    <p class="text-sm font-medium text-gray-900">{{ document.number }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Номер рахунку</p>
+                    <p class="text-sm font-medium text-gray-900">{{ document.account_number|default:"—" }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Дата транзакції</p>
+                    <p class="text-sm font-medium text-gray-900">{{ document.date|date:"d.m.Y" }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Папка</p>
+                    <p class="text-sm font-medium text-gray-900">{{ document.folder|default:"—" }}</p>
+                </div>
+            </div>
+            
+            <div>
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Контрагент</p>
+                    <p class="text-sm font-medium text-gray-900">{{ document.contractor }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Створено</p>
+                    <p class="text-sm font-medium text-gray-900">{{ document.created_at|date:"d.m.Y H:i" }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Оновлено</p>
+                    <p class="text-sm font-medium text-gray-900">{{ document.updated_at|date:"d.m.Y H:i" }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Активний</p>
+                    <p class="text-sm font-medium text-gray-900">
+                        {% if document.is_active %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check mr-1"></i> Так
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                <i class="fas fa-times mr-1"></i> Ні
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                {% if document.error_code %}
+                <div class="mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Код помилки</p>
+                    <p class="text-sm font-medium text-gray-900">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            {{ document.error_code }}
+                        </span>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div> 
